@@ -20,3 +20,9 @@ class JSONStructure:
 					d = json.load(f)
 			data[key] = mappings[key](d)
 		self.__dict__.update(data)
+
+class Application(JSONStructure):
+	def __init__(self,data):
+		JSONStructure.__init__(self,data)
+	def __call__(self):
+		pass
