@@ -13,6 +13,7 @@ class JSONStructure:
 			else:
 				return mappings[k](v)
 		for key in mappings.keys():
+			print(data)
 			d = data[key]
 			if isinstance(d,str):
 				# filename
