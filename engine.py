@@ -40,9 +40,9 @@ class Timer(JSONStructure):
 
 class GameApplication(Application):
 	running = True
-	def __init__(self,data):
+	def __init__(self,data,name):
 		self.field_mappings['screen'] = Screen
-		super().__init__(data)
+		super().__init__(data,name)
 	def __call__(self):
 		def do_frame(node):
 			self.events_dispatch()

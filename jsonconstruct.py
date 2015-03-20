@@ -20,7 +20,19 @@ class JSONStructure:
 		self.__dict__.update(data)
 
 class Application(JSONStructure):
-	def __init__(self,data):
+	def __init__(self,data,appname):
 		JSONStructure.__init__(self,data)
+		self.base_directory = "."
+		self.appname = appname
 	def __call__(self):
 		pass
+	def get_file(self,path):
+		return os.path.join(self.base_directory,path)
+	def media_directory(self):
+		return self.get_file("media")
+	def data_directory(self):
+		return self.get_file("data")
+	def user_directory(self):
+		# this data comes from the user's home/.application directory.
+		userdir = self.base_directory
+		return self.get_file(userdir,self.appname)
