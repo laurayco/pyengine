@@ -16,14 +16,23 @@ class LoopingNode(ExecutionNode):
 	def connect(self,node):
 		self.final_response.nextnode = node
 
+class ScreenLoop(LoopingNode):
+	def __init__(self,data):
+		super().__init__(data)
+		self.response = NodeResponse()
+	def __call__(self,game,*a,**k):
+		game.screen.update()
+		return super().__call__(game,*a,**k)
+
 class IntroSlide(ExecutionNode):
 	def __init__(self,data):
 		super().__init__(data)
+		self.response = NodeResponse()
 	def __call__(self,game,*a,**k):
 		game.screen.display.fill(self.color)
+		return self.response
 
-
-class IntroRootNode(ExecutionNode):
+class IntroRootNode(ScreenLoop):
 	current_slide = -1
 	def __init__(self,data):
 		self.field_mappings = {
@@ -32,10 +41,12 @@ class IntroRootNode(ExecutionNode):
 			"slides":IntroSlide
 		}
 		super().__init__(data)
+		self.loop_head.response.nextnode = self
+		for slide in self.slides:
+			slide.response.nextnode = self
 		self.timer.duration = self.continue_response.nextnode.duration
 	def is_finished(self):
 		if self.timer.elapsed():
-			self.timer.reset()
 			return not self.progress()
 		else:
 			return False
@@ -49,15 +60,14 @@ class IntroRootNode(ExecutionNode):
 
 class DemoGame(GameApplication):
 	def __init__(self,data):
-		self.field_mappings['rootnode'] = IntroRootNode
+		self.field_mappings['root_node'] = IntroRootNode
 		super().__init__(data)
 
 if __name__=="__main__":
 	DemoGame({
-		"rootnode":{
+		"root_node":{
 			"timer":{
-				"duration":3000,
-				"elapsed":0
+				"duration":3000
 			},  "loop_head": {
 				"color":(255,0,0),
 				"duration":1000

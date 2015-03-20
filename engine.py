@@ -13,8 +13,8 @@ class ExecutionNode(JSONStructure):
 
 class NodeResponse(JSONStructure):
 	nextnode = None
-	def __init__(self,data):
-		super().__init__(data)
+	def __init__(self,data=None):
+		super().__init__(data or {})
 
 class Screen(JSONStructure):
 	def __init__(self,data):
@@ -26,12 +26,14 @@ class Screen(JSONStructure):
 		pygame.display.flip()
 
 class Timer(JSONStructure):
+	tally = 0
+	duration = 0
 	def __init__(self,data):
 		super().__init__(data)
 		self.clock = pygame.time.Clock()
 	def elapsed(self):
 		self.tally += self.clock.tick()
-		if tally>=self.duration:
+		if self.tally>=self.duration:
 			self.tally = 0
 			return True
 		return False
@@ -44,6 +46,7 @@ class GameApplication(Application):
 	def __call__(self):
 		def do_frame(node):
 			self.events_dispatch()
+			result = node(self)
 			if not(result.nextnode and self.running):
 				return None
 			return result.nextnode
@@ -55,4 +58,4 @@ class GameApplication(Application):
 			if evnt.type==pygame.QUIT:
 				self.running=False
 			# send events to subscribers
-		consume(map(dispatch,(pygame.events.get())))
+		consume(map(dispatch,(pygame.event.get())))

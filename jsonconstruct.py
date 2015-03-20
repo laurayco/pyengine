@@ -13,13 +13,10 @@ class JSONStructure:
 			else:
 				return mappings[k](v)
 		for key in mappings.keys():
-			print(data)
-			d = data[key]
-			if isinstance(d,str):
-				# filename
-				with open(d) as f:
-					d = json.load(f)
-			data[key] = mappings[key](d)
+			try:
+				data[key] = load_data(key,data[key])
+			except KeyError:
+				pass
 		self.__dict__.update(data)
 
 class Application(JSONStructure):
